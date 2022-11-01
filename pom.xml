@@ -8,6 +8,7 @@
 		<version>2.7.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+	
 	<groupId>com.algaworks.algamoney-api</groupId>
 	<artifactId>algamoney-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -121,6 +122,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>    
+                <mainClass>com.example.algamoney.api.AlgamoneyApiApplication</mainClass>
+              </configuration>
 			</plugin>
 			
 		
