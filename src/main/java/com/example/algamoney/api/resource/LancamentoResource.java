@@ -15,6 +15,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,7 @@ import com.example.algamoney.api.exceptionhandler.AlgamoneyExceptionHandler.Erro
 import com.example.algamoney.api.model.Lancamento;
 import com.example.algamoney.api.repository.LancamentoRepository;
 import com.example.algamoney.api.repository.filter.LancamentoFilter;
+import com.example.algamoney.api.repository.projection.ResumoLancamento;
 import com.example.algamoney.api.service.LancamentoService;
 import com.example.algamoney.api.service.exception.PessoaInexistenteOuInativaException;
 
@@ -53,8 +55,15 @@ public class LancamentoResource {
 	
 	@GetMapping
 	// Pageable é para colocar paginação.
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
 	public Page<Lancamento> pesquisar(LancamentoFilter lancamentoFilter, Pageable pageable){
 		return lancamentoRepository.filtrar(lancamentoFilter, pageable);
+	}
+	
+	@GetMapping(params = "resumo")
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
+	public Page<ResumoLancamento> resumir(LancamentoFilter lancamentoFilter, Pageable pageable) {
+		return lancamentoRepository.resumir(lancamentoFilter, pageable);
 	}
 	
 	@PostMapping // Aqui abaixo vai permitir que quando criado uma categoria no json ela vai virar objeto
@@ -64,6 +73,7 @@ public class LancamentoResource {
 	// O responseEntity retorna uma um objeto(categoria)
 	// É necessário validar a categoria  para que as validações inseridas sejam reconhecidas e executadas
 	// A aplicação do Spring Validation é bastante simples e prática e precisa ser reconhecida.
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and hasAuthority('SCOPE_write')")
 	public ResponseEntity<Lancamento> criar(@Valid @RequestBody Lancamento lancamento, HttpServletResponse response){
 		// Aqui é necessario instanciar o objeto categoriaSalva pois vamos precisar do id.
 		
@@ -87,6 +97,7 @@ public class LancamentoResource {
 	
 	@GetMapping("/{codigo}")
 	// O @PathVariable é pq o id vai variar. 
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and hasAuthority('SCOPE_read')")
 	public ResponseEntity<Lancamento> buscarPeloCodigo(@PathVariable Long codigo) {
 	Optional<Lancamento> lancamento = this.lancamentoRepository.findById(codigo);
 	// operador ternário para se achar ok, do contrário retorna not found(404).
@@ -118,6 +129,7 @@ public class LancamentoResource {
 	
 	@DeleteMapping("/{codigo}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)// Não vai retornar conteúdo.
+	@PreAuthorize("hasAuthority('ROLE_REMOVER_LANCAMENTO') and hasAuthority('SCOPE_write')")
 	public void remover(@PathVariable Long codigo) {
 		this.lancamentoRepository.deleteById(codigo);
 	}

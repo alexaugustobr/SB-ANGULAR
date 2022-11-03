@@ -60,6 +60,12 @@
         <artifactId>spring-boot-starter-validation</artifactId>
        </dependency>
        
+       <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+       
        <!-- Hibernate Java 8 Support -->
        <!-- isto é para converter a data que está no banco de dados para o Localdate -->
        <dependency>
